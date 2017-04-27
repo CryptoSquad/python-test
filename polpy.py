@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import talib
 from poloniex import Poloniex
+import matplotlib.pyplot as plt
 
 conn = sqlite3.connect('example.db')
 c = conn.cursor()
@@ -18,11 +19,11 @@ polo = Poloniex()
 def dbInit(currencyPair):
 	
 	sql = 'CREATE TABLE IF NOT EXISTS ' + currencyPair + ' (volume real, quoteVolume real, high real, low real, date text, close real, weightedAverage real, open real)'
-	
 	c.execute(sql)
 
 def dbInsert(currencyPair):
-	temp = polo.returnChartData(currencyPair)
+	
+	temp = polo.returnChartData(currencyPair) #returnChartData(self, pair, period=False, start=False, end=False)
 	for data in temp:
 		sql = 'INSERT INTO ' +currencyPair + ' VALUES (?,?,?,?,?,?,?,?)'
 		#convert from unicode to float
@@ -32,15 +33,25 @@ def dbInsert(currencyPair):
 	#conn.close()
 
 def calcEMA(currencyPair):
+	
 	sql = 'SELECT weightedAverage FROM ' + currencyPair
 	c.execute(sql)
-	data = c.fetchall()
+	data = c.fetchall() # data is returned as a tuple
 	for x in range(0,len(data)):
 		data[x] = data[x][0]
 	#print(data)
-	data = np.asarray(data)
-	out = talib.EMA(data,15)
-	print(out)
+	dataNP = np.asarray(data) # cast as numpy array 
+	out = talib.EMA(dataNP,15)
+	print(np.shape(dataNP))
+	x = list(range(0,len(data)))
+	# plt.plot(list(x, data,'r',x , out, 'g')
+	# plt.show()
+	plt.plot(x, data, 'g', x, out, 'r')
+	plt.xlabel('30 day window')
+	plt.ylabel('BTC/ETH price')
+	plt.show()
+
+
 	#print(type(data[1]))
 	#floatData = [float(x) for x in data] #talib no likey non float variables 	
 	#out = talib.SMA(floatData,15)
