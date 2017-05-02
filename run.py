@@ -1,6 +1,10 @@
 import polpy
 import numpy as np
-c = polpy.Crypto('BTC_ETH',0,1800,0)
+from time import time
+
+start = time() - 2*2592000
+end = time() - 2592000
+c = polpy.Crypto('BTC_ETH',start,1800,end)
 a= c.update()
 q = c.avgArray()
 fast =c.calcEMA(5)

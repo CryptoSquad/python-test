@@ -35,6 +35,8 @@ class Crypto(object):
 		if not endDate:
 			endDate = time() 
 			self.lastDate = endDate
+		else:
+			self.lastDate = endDate
 		self.data = polo.returnChartData(self.currencyPair, self.interval, startDate, self.lastDate) #returnChartData(self, pair, period=False, start=False, end=False)
 
 
@@ -58,11 +60,9 @@ class Crypto(object):
 		self.EMA= out
 		return self.EMA
 
-	def calcMACD(self):
+	def calcMACD(self,fastPeriod,slowPeriod):
 
-		fastperiod = 12
-		slowperiod = 26
-		signalperiod = 9
+
 		macd, signal, hist = talib.MACD(self.avg,fastperiod, slowperiod, signalperiod)
 		
 		self.MACD = macd - signal
@@ -82,26 +82,34 @@ class Crypto(object):
 		for intersection in self.idx:
 			plt.plot(x[intersection], algo2[intersection], 'ro')
 		plt.xlabel('Time')
-		plt.ylabel('BTC/ETH price')
+		plt.ylabel(self.currencyPair)
 		plt.show()
 
 	def backtest(self,algo1,algo2):
-		eth = 100
+		eth = 10
+		holding = True
+		#btc = 1
 		x = range(0,len(self.data))
-		for i in self.idx:
-			if algo1[self.idx[i]-2] > algo2[self.idx[i]-2]:
+		for i,j in enumerate(self.idx):
+			# print(j)
+			# print(algo1[j])
+			if algo1[j-2] > algo2[j-2] and holding: # check that faster algo is above slower
 				#buy
-				btc = eth * self.avg[self.idx[i]]
+				btc = eth * self.avg[j]
 				eth = 0
-				print('BUY')
-				print('btc value ', btc)
-				print('eth value ', eth)
-			else:
-				eth = btc / self.avg[self.idx[i]]
-				btc = 0
 				print('SELL')
 				print('btc value ', btc)
+				print('eth value ', eth)
+				holding = False
+			elif not holding:
+				eth = btc / self.avg[j]
+				btc = 0
+				print('BUY')
+				print('btc value ', btc)
 				print('eth value ',eth)
+				profit = (eth/10 - 1) * 100
+				print('profit = ' + str(profit) + '% ')
+				holding = True 
 
 
 
