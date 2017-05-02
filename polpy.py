@@ -78,10 +78,32 @@ class Crypto(object):
 		plt.plot(x, algo2)
 		# for y in args:
 		# 	plt.plot(x,y)
-		idx = np.argwhere(np.diff(np.sign( algo1 - algo2)) != 0)#.reshape(-1) + 0
-		for intersection in idx:
+		self.idx = np.argwhere(np.diff(np.sign( algo1 - algo2)) != 0).reshape(-1) + 0
+		for intersection in self.idx:
 			plt.plot(x[intersection], algo2[intersection], 'ro')
 		plt.xlabel('Time')
 		plt.ylabel('BTC/ETH price')
 		plt.show()
+
+	def backtest(self,algo1,algo2):
+		eth = 100
+		x = range(0,len(self.data))
+		for i in self.idx:
+			if algo1[self.idx[i]-2] > algo2[self.idx[i]-2]:
+				#buy
+				btc = eth * self.avg[self.idx[i]]
+				eth = 0
+				print('BUY')
+				print('btc value ', btc)
+				print('eth value ', eth)
+			else:
+				eth = btc / self.avg[self.idx[i]]
+				btc = 0
+				print('SELL')
+				print('btc value ', btc)
+				print('eth value ',eth)
+
+
+
+
 

@@ -3,13 +3,13 @@ import numpy as np
 c = polpy.Crypto('BTC_ETH',0,1800,0)
 a= c.update()
 q = c.avgArray()
-b =c.calcEMA(5)
-e = c.calcEMA(10)
+fast =c.calcEMA(5)
+slow = c.calcEMA(10)
 
 
 
-w = c.plot(q,b,e)
-
+w = c.plot(q,fast,slow)
+c.backtest(fast,slow)
 
 # import numpy as np
 # import matplotlib.pyplot as plt

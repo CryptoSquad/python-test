@@ -11,3 +11,7 @@ numpy
 pandas
 ta-lib
 matplotlib
+
+To run navigate to directory in Terminal/cmd
+
+>python run.py
