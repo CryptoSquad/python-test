@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import talib
 from poloniex import Poloniex
 from time import time
+import time as t
 import sys 
 
 
@@ -33,17 +34,16 @@ class Crypto(object):
 		if not startDate:
 			startDate = time() - 2592000 # month
 		if not endDate:
-			endDate = time() 
-			self.lastDate = endDate
+			self.lastDate = time() 
 		else:
 			self.lastDate = endDate
 		self.data = polo.returnChartData(self.currencyPair, self.interval, startDate, self.lastDate) #returnChartData(self, pair, period=False, start=False, end=False)
 
 
 	def update(self):
-		currentDate = time()
-		self.data.extend(polo.returnChartData(self.currencyPair, self.interval, self.lastDate, currentDate))
-		self.lastDate = currentDate
+		# currentDate = time()
+		# self.data.extend(polo.returnChartData(self.currencyPair, self.interval, self.lastDate, currentDate))
+		# self.lastDate = currentDate
 
 		return self.data
 
@@ -53,6 +53,11 @@ class Crypto(object):
 			self.avg.append(float(self.data[x]['weightedAverage']))
 		self.avg = np.asarray(self.avg)
 		return self.avg
+
+	def timeArray(self):
+		self.date = []
+		for x in range(0,len(self.data)):
+			self.date.append(float(self.data[x]['date']))
 
 
 	def calcEMA(self,interval):
@@ -83,35 +88,45 @@ class Crypto(object):
 			plt.plot(x[intersection], algo2[intersection], 'ro')
 		plt.xlabel('Time')
 		plt.ylabel(self.currencyPair)
+		print 'Done'
 		plt.show()
 
 	def backtest(self,algo1,algo2):
 		eth = 10
 		holding = True
-		#btc = 1
+		trades = 0
 		x = range(0,len(self.data))
 		for i,j in enumerate(self.idx):
 			# print(j)
 			# print(algo1[j])
+
 			if algo1[j-2] > algo2[j-2] and holding: # check that faster algo is above slower
 				#buy
 				btc = eth * self.avg[j]
-				eth = 0
 				print('SELL')
-				print('btc value ', btc)
-				print('eth value ', eth)
+				date = t.ctime(self.date[j])
+				print(str(eth) + ' eth sold at ' + str(round(self.avg[j],5)))
+				print(date)
 				holding = False
+				trades = trades + 1
+				eth = 0
+				print('btc value- %f' % btc)
+				print('eth value- %f' % eth)
+				print('\n')
 			elif not holding:
 				eth = btc / self.avg[j]
-				btc = 0
 				print('BUY')
-				print('btc value ', btc)
-				print('eth value ',eth)
 				profit = (eth/10 - 1) * 100
+				date = t.ctime(self.date[j])
+				print(str(eth) + ' eth bought at ' + str(round(self.avg[j],5)))
+				print(date)
 				print('profit = ' + str(profit) + '% ')
-				holding = True 
-
-
-
+				holding = True
+				trades = trades + 1 
+				btc = 0
+				print('btc value- %f' % btc)
+				print('eth value- %f' % eth) 
+				print('\n')
+		print 'total trades = %i' % trades
 
 
