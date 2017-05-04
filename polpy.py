@@ -41,9 +41,9 @@ class Crypto(object):
 
 
 	def update(self):
-		# currentDate = time()
-		# self.data.extend(polo.returnChartData(self.currencyPair, self.interval, self.lastDate, currentDate))
-		# self.lastDate = currentDate
+		currentDate = time()
+		self.data.extend(polo.returnChartData(self.currencyPair, self.interval, self.lastDate, currentDate))
+		self.lastDate = currentDate
 
 		return self.data
 
@@ -89,7 +89,7 @@ class Crypto(object):
 		plt.xlabel('Time')
 		plt.ylabel(self.currencyPair)
 		print 'Done'
-		plt.show()
+		#plt.show()
 
 	def backtest(self,algo1,algo2):
 		eth = 10

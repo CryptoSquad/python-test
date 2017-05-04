@@ -1,14 +1,16 @@
 import polpy
 import numpy as np
 from time import time
+import time as t
 import matplotlib.pyplot as plt
 import sys
 
 f = open('output.txt', 'w')
 sys.stdout = f
-start = time() - *2592000
+start = time() - 12*2592000
 end = time() - 6*2592000
 c = polpy.Crypto('BTC_ETH',start,300,end)
+t.sleep(1) # wait so not to overload the API
 a= c.update()
 c.timeArray()
 q = c.avgArray()
